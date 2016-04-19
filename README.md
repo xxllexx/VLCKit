@@ -1,3 +1,62 @@
+# Building VLC
+
+```
+# note these instructions are as of Dec 28, 2015
+
+# the vlc and vlckit repos are super complex and have thousands of dependencies from everywhere on the internet.
+# so, you'll need to mess with things a bit
+
+git clone http://code.videolan.org/videolan/VLCKit.git
+cd VLCKit
+
+./buildMobileVLCKit.sh -t
+
+# it might then error after a a few minutes with a live555 build problem.
+# fix it by manually downloading the .tar.gz live555 from their website: http://live555.com/liveMedia/public/
+# and put it into MobileVLCKit/ImportedSources/vlc/contrib/tarballs/
+# and do a 'shasum -a 512' on the tar.gz file and update the SHA in MobileVLCKit/ImportedSources/vlc/contrib/src/live555/SHA512SUMS
+# and update MobileVLCKit/ImportedSources/vlc/contrib/src/live555/rules.mak to use this new filename
+# and comment out these lines from buildMobileVLCKit.sh:
+#   git pull --rebase
+#   git reset --hard ${TESTEDHASH}
+#   git am ../../patches/*.patch
+# then run it again
+
+./buildMobileVLCKit.sh -t
+
+# you'll notice nothing gets built at the end. to make the actual .a files:
+
+xcodebuild -project "MobileVLCKit.xcodeproj" -target "TVVLCKit" -sdk appletvos9.1 -configuration Release ARCHS="arm64" IPHONEOS_DEPLOYMENT_TARGET=9.1 GCC_PREPROCESSOR_DEFINITIONS=""
+xcodebuild -project "MobileVLCKit.xcodeproj" -target "TVVLCKit" -sdk appletvsimulator9.1 -configuration Release ARCHS="x86_64" IPHONEOS_DEPLOYMENT_TARGET=9.1 GCC_PREPROCESSOR_DEFINITIONS=""
+
+# then make the .framework file:
+
+cd build
+rm -rf TVVLCKit.framework
+mkdir TVVLCKit.framework
+lipo -create Release-appletvos/libTVVLCKit.a Release-appletvsimulator/libTVVLCKit.a -o TVVLCKit.framework/TVVLCKit
+chmod a+x TVVLCKit.framework/TVVLCKit
+cp -pr Release-appletvos/TVVLCKit TVVLCKit.framework/Headers
+
+# then copy the TVVLCKit.framework into your project
+# then open the SimplePlayback iOS example and import all the same frameworks into your appletv project (a couple might not exist on apple tv, thats ok)
+# for swift, add a bridging header and add '#import <TVVLCKit/TVVLCKit.h>' to it
+
+# the code for a simple video to start playing:
+
+# this goes in the class definitions
+# let mp = VLCMediaPlayer()
+
+# this goes in the playback method
+# mp.drawable = window!
+# mp.media = VLCMedia(URL: NSURL(string: "http://streams.videolan.org/streams/mp4/Mr_MrsSmith-h264_aac.mp4"))
+# mp.play()
+
+# i have a sample project up (it's big because the libs are huge):
+# http://cl.ly/2D3e29113B2O
+# note that i have a 4GB/day limit on cloudapp, so you might need to try again tomorrow if im out of bw
+```
+
 # VLCKit
 
 VLCKit is a generic library for any audio or video playback needs on OS X, iOS and tvOS. It also supports active streaming and media to file conversations on the Mac. It is open-source software licensed under LGPLv2.1 or later, available in source code and binary form from the [VideoLAN website]. You can also integrate MobileVLCKit easily via [CocoaPods].
