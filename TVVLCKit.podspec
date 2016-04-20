@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = "MobileVLCKit"
+  s.name             = "TVVLCKit"
   s.version          = "3.0.0"
   s.summary          = "VLCKit (Used by PopcornTime)"
   s.homepage         = "https://github.com/PopcornTimeTV/VLCKit"
