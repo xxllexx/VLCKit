@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.license          = 'MIT'
   s.author           = { "Popcorn" => "popcorn@time.tv" }
   s.source           = { :http => "https://github.com/PopcornTimeTV/VLCKit/releases/download/3.0.0/TVVLCKit.framework.zip" }
-  s.frameworks = 'QuartzCore', 'CoreText', 'AVFoundation', 'Security', 'CFNetwork', 'AudioToolbox', 'OpenGLES', 'CoreGraphics', 'VideoToolbox', 'CoreMedia'
+  s.frameworks = 'QuartzCore', 'CoreText', 'AVFoundation', 'Security', 'CFNetwork', 'AudioToolbox', 'OpenGLES', 'CoreGraphics', 'CoreMedia'
   s.libraries = 'c++', 'xml2', 'z', 'bz2', 'iconv'
   s.requires_arc = false
   s.platform = :tvos
